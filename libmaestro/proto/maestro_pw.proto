@@ -133,6 +133,10 @@ message SettingValue {
         EqBands current_user_eq = 16;
         int32 volume_asymmetry = 17;            // value goes from 0 t0 200 (incl.), even/odd indicates left/right
         // reading last_saved_user_eq returns non-zero status (code: 2)
+        bool sum_to_mono = 19;
+        // id 20 does not seem to exist (yet?)
+        bool volume_exposure_notifications = 21;
+        bool speech_detection = 22;
     }
 }
 
@@ -257,4 +261,39 @@ service EartipFitTest {
     rpc StartTest(StartEartipFitTestMsg) returns (google.protobuf.Empty) {}
     rpc EndTest(StartEartipFitTestMsg) returns (google.protobuf.Empty) {}
     rpc SubscribeToResults(SubscribeToEartipFitTestResultsMsg) returns (stream EartipFitTestResult) {}
+}
+
+
+/* -- JitterBuffer Service ---------------------------------------------------------------------- */
+
+message SetJitterBufferSizePreferenceMsg {
+    // TODO
+}
+
+service JitterBuffer {
+    rpc SetJitterBufferSizePreference(SetJitterBufferSizePreferenceMsg) returns (google.protobuf.Empty) {}
+}
+
+
+/* -- Dosimeter Service ------------------------------------------------------------------------- */
+
+message DosimeterSummaryEntry {
+    int32 unknown1 = 1;
+    float unknown6 = 6;
+}
+
+message DosimeterSummary {
+    int32 unknown1 = 1;
+    repeated DosimeterSummaryEntry unknown2 = 2;
+    int32 unknown4 = 4;
+    float unknown5 = 5;
+}
+
+message DosimeterLiveDbMsg {
+    float intensity = 2;        // convert to dB via log10(x) * 10
+}
+
+service Dosimeter {
+    rpc FetchDailySummaries(google.protobuf.Empty) returns (DosimeterSummary) {}
+    rpc SubscribeToLiveDb(google.protobuf.Empty) returns (DosimeterLiveDbMsg) {}
 }
